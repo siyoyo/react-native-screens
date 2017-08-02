@@ -18,7 +18,33 @@ const mark = require("./login1_mark.png");
 const lockIcon = require("./login1_lock.png");
 const personIcon = require("./login1_person.png");
 
+import * as firebase from "firebase";
+firebase.initializeApp({apiKey: "AIzaSyCW7sLnPhymxJwLNN-yhN8IBOre1S4um4g", authDomain: "testfirebase-88f48.firebaseapp.com", databaseURL: "https://testfirebase-88f48.firebaseio.com/", storageBucket: "gs://testfirebase-88f48.appspot.com"});
+
+
 export default class LoginScreen extends Component {
+
+    // instan async method, if in android must created a class 
+  async login() {
+    this.setState({loaded: false});
+    //alert(this.state.email + " " + this.state.password)
+
+    // executed in separated thread
+    await firebase
+      .auth()
+      .signInWithEmailAndPassword(this.state.email, this.state.password)
+      .then(function (firebaseUser) {
+        alert("Successfully Login Using Firebase Authentication Service" + JSON.stringify(firebaseUser));
+      })
+      .catch(function (error) {
+        alert("Failed To Login");
+        console.log(error)
+      });
+
+    // UI Stuff should be outside of threat
+    this.setState({loaded: true});
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -32,7 +58,8 @@ export default class LoginScreen extends Component {
                 <Image source={personIcon} style={styles.icon} resizeMode="contain" />
               </View>
               <TextInput 
-                placeholder="Username" 
+                onChangeText={(text) => this.setState({email: text})}
+                placeholder="Email" 
                 placeholderTextColor="#FFF"
                 style={styles.input} 
               />
@@ -42,6 +69,7 @@ export default class LoginScreen extends Component {
                 <Image source={lockIcon} style={styles.icon} resizeMode="contain" />
               </View>
               <TextInput 
+                onChangeText={(text) => this.setState({password: text})}
                 placeholderTextColor="#FFF"
                 placeholder="Password" 
                 style={styles.input} 
@@ -53,7 +81,12 @@ export default class LoginScreen extends Component {
                 <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity activeOpacity={.5}>
+            <TouchableOpacity 
+                onPress={()=> {
+                  this.login();
+                  console.log('button pressed');
+               }
+              } activeOpacity={.5}>
               <View style={styles.button}>
                 <Text style={styles.buttonText}>Sign In</Text>
               </View>

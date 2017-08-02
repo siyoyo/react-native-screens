@@ -13,7 +13,7 @@ export default class screens extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <SignupScreen />
+        <LoginScreen />
       </View>
     );
   }
